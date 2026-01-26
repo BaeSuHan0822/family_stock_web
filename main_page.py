@@ -4,11 +4,11 @@ import pandas as pd
 import base64
 from datetime import datetime
 
-# 메인 페이지로 돌아가기
-st.page_link("main_page.py", label="메인으로 돌아가기", icon="🏠")
-
 # 1. 페이지 설정
 st.set_page_config(page_title="주식 포트폴리오", layout="wide")
+
+# 메인 페이지로 돌아가기
+st.page_link("main_page.py", label="메인으로 돌아가기", icon="🏠")
 
 # --- 1. 상단: 날짜와 시간 ---
 # 현재 시간 가져오기
