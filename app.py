@@ -33,7 +33,11 @@ st.subheader("오늘의 경제 주요뉴스")
 
 # 4개의 컬럼 생성
 col1, col2, col3, col4 = st.columns(4)
-news_list = summarize_ai()
+@st.cache_data(ttl=10800,show_spinner = "AI가 뉴스를 분석 중입니다...")
+def load_ai_news() :
+    return summarize_ai()
+
+news_list = load_ai_news()
 
 # 반복문으로 뉴스 카드 배치
 columns = [col1, col2, col3, col4]
