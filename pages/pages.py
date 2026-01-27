@@ -3,6 +3,9 @@ import yfinance as yf
 import pandas as pd
 import datetime
 
+
+st.page_link("app.py", label="메인으로 돌아가기", icon="🏠")
+
 # 1. 페이지 설정
 st.set_page_config(page_title="삼성전자", layout="wide")
 

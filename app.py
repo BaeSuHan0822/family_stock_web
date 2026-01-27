@@ -1,20 +1,20 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
-import base64
+import pytz,ast,base64,random
 from datetime import datetime
+from summarize_news import summarize_ai
+
+KST = pytz.timezone('Asia/Seoul')
 
 # 1. 페이지 설정
 st.set_page_config(page_title="주식 포트폴리오", layout="wide")
-
-# 메인 페이지로 돌아가기
-st.page_link("main_page.py", label="메인으로 돌아가기", icon="🏠")
 
 # --- 1. 상단: 날짜와 시간 ---
 # 현재 시간 가져오기
 @st.fragment(run_every=1)
 def show_live_time() :
-    now = datetime.now()
+    now = datetime.now(KST)
     date_str = now.strftime("%Y-%m-%d")
     time_str = now.strftime("%H:%M:%S")
     
@@ -33,27 +33,40 @@ st.subheader("오늘의 경제 주요뉴스")
 
 # 4개의 컬럼 생성
 col1, col2, col3, col4 = st.columns(4)
-
-# 가짜 뉴스 데이터 (나중에 크롤링한 데이터로 교체하세요)
-news_list = [
-    {"title": "반도체 경기 회복 신호...", "img": "https://picsum.photos/300/200?random=1"},
-    {"title": "전기차 시장의 미래는?", "img": "https://picsum.photos/300/200?random=2"},
-    {"title": "글로벌 금리 인하 기대감", "img": "https://picsum.photos/300/200?random=3"},
-    {"title": "K-콘텐츠 수출 역대 최고", "img": "https://picsum.photos/300/200?random=4"},
-]
+news_list = summarize_ai()
 
 # 반복문으로 뉴스 카드 배치
 columns = [col1, col2, col3, col4]
 for col, news in zip(columns, news_list):
     with col:
-        # 뉴스 썸네일 (가짜 이미지)
-        st.image(news["img"], width="stretch")
-        # 뉴스 제목
-        st.write(f"**{news['title']}**")
-        st.caption("2024.05.20 | 경제신문")
-        with st.expander(f"AI 요약본 확인하기 (클릭)",expanded=False) :
-            st.markdown("""
-                        """)
+        title = news[0]
+        link = news[1]
+        reason = news[2]
+        analysis = news[3]
+        
+        random_id = random.randint(1, 1000)
+        img_url = f"https://picsum.photos/300/200?random={random_id}"
+        
+        st.markdown(
+            f"""
+            <a href="{link}" target="_blank">
+                <img src="{img_url}" style="width:100%; border-radius: 10px; margin-bottom: 10px;">
+            </a?
+            """,
+            unsafe_allow_html=True
+        )
+        
+        st.markdown(f"**[{title}]({link})**")
+        with st.expander("🔍 AI 요약본 확인하기 (클릭)") :
+            st.markdown(f"**💡 선정 이유**")
+            st.info(reason) # 파란색 박스로 강조
+            
+            st.markdown(f"**📈 주식 시장 영향**")
+            st.success(analysis) # 초록색 박스로 강조
+            
+            st.markdown(f"[👉 기사 원문 읽기]({link})")
+        
+        
 
 st.write("") # 여백
 st.write("") # 여백

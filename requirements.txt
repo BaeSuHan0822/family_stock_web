@@ -1,4 +1,9 @@
 streamlit
 yfinance
 pandas
-google-generativeai
+pytz
+google-genai
+python-dotenv
+selenium
+webdriver-manager
+beautifulsoup4
