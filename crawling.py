@@ -10,13 +10,30 @@ URL = "https://news.naver.com/section/101"
 def create_driver() :
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
-    options.add_argument("--no-sandbox") # [추가] 리눅스 환경 필수 옵션
-    options.add_argument("--disable-dev-shm-usage") # [추가] 메모리 공유 문제 해결
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
     options.add_argument("User-Agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36")
+    options.add_argument("--window-size=1920,1080")
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
-    driver.get(URL)
-    return driver
+    try:
+        # [핵심 수정] 서버에 이미 설치된 드라이버가 있는지 확인
+        if os.path.exists("/usr/bin/chromedriver"):
+            # Streamlit Cloud 서버용 경로 (다운로드 안 하고 이거 씀)
+            service = Service("/usr/bin/chromedriver")
+            print("🖥️ 서버 환경 감지: 시스템 드라이버를 사용합니다.")
+        else:
+            # 내 컴퓨터용 (자동 다운로드)
+            service = Service(ChromeDriverManager().install())
+            print("💻 로컬 환경 감지: 드라이버를 다운로드합니다.")
+
+        driver = webdriver.Chrome(service=service, options=options)
+        driver.get(URL)
+        return driver
+        
+    except Exception as e:
+        print(f"❌ 크롬 드라이버 실행 에러: {e}")
+        raise e
 
 
 def push_button(driver) :
