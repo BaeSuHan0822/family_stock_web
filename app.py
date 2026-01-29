@@ -97,7 +97,7 @@ if not df.empty:
     )
     st.caption(f"전일 종가 : {prev_rate:.2f}원")
     # 5. 차트 그리기 (Streamlit 내장 차트)
-    st.subheader("지난 1달간 환율 차트")
+    st.subheader("지난 1년간 환율 차트")
     st.line_chart(df['Close'])
 else:
     st.error("데이터를 가져오는데 실패했습니다.")
@@ -118,7 +118,7 @@ with col1:
     # [삼성] 화면 이동
     st.markdown(
         f"""
-        <a href="pages?code=005930.KS" target="_blank">
+        <a href="page?code=005930.KS" target="_blank">
             <img src="{samsung_img}" 
                  style="width: 200px; height: 200px; object-fit: cover; border-radius: 10px;">
         </a>
@@ -129,7 +129,7 @@ with col1:
 with col2:
     st.markdown(
         f"""
-        <a href="pages?code=005380.KS" target="_blank">
+        <a href="page?code=005380.KS" target="_blank">
             <img src="{hyundai_img}" 
                  style="width: 200px; height: 200px; object-fit: cover; border-radius: 10px;">
         </a>
@@ -140,7 +140,7 @@ with col2:
 with col3:
     st.markdown(
         f"""
-        <a href="pages?code=122870.KQ" target="_blank">
+        <a href="page?code=122870.KQ" target="_blank">
             <img src="{yg_img}" 
                  style="width: 200px; height: 200px; object-fit: cover; border-radius: 10px;">
         </a>
