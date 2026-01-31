@@ -35,7 +35,7 @@ st.subheader("오늘의 경제 주요뉴스")
 col1, col2, col3, col4 = st.columns(4)
 @st.cache_data(ttl=10800,show_spinner = "AI가 뉴스를 분석 중입니다...")
 def load_ai_news() :
-    return summarize_ai()
+    return summarize_ai("main")
 
 news_list = load_ai_news()
 

@@ -1,14 +1,23 @@
 from google import genai
 from dotenv import load_dotenv
-from crawling import create_driver,push_button,get_title_link
+from main_page_news_crawling import create_driver as main_driver,push_button,get_title_link as main_title_link
+from pages.stock_news_crawling import create_driver as sub_driver,page_scroll,get_title_link as sub_title_link
 import ast,os
 
-def summarize_ai() :
+def summarize_ai(from_where : str,code : str = None) :
     load_dotenv()
 
-    driver = create_driver()
-    push_button(driver)
-    title_link = get_title_link(driver)
+    if from_where == 'main' :
+        # 메인 페이지 정리
+        driver = main_driver()
+        push_button(driver)
+        title_link = main_title_link(driver)
+    else :
+        driver = sub_driver(code)
+        page_scroll(driver)
+        title_link = sub_title_link(driver)
+    # 세부 페이지 정리
+    
 
     api_key = os.getenv("GOOGLE_API_KEY")
 

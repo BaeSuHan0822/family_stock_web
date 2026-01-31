@@ -4,7 +4,9 @@ import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import pytz
+import pytz,random
+import FinanceDataReader as fdr
+from summarize_news import summarize_ai
 
 KST = pytz.timezone('Asia/Seoul')
 
@@ -17,6 +19,17 @@ if "code" in query_params :
     ticker_symbol = query_params["code"]
 else :
     ticker_symbol = "005930.KS"
+    
+stock_code = ticker_symbol.split('.')[0]
+df = fdr.StockListing('KRX')
+row = df[df['Code'] == stock_code]
+stock_name = row.iloc[0]['Name']
+
+@st.cache_data(ttl=10800,show_spinner = "AI가 뉴스를 분석 중입니다...")
+def load_ai_news(code) :
+    return summarize_ai("sub",code)
+
+news_list = load_ai_news(stock_code)
 
 # 메인으로 돌아가기 버튼
 st.page_link("app.py", label="메인으로 돌아가기", icon="🏠")
@@ -42,7 +55,6 @@ with st.spinner("주식 정보를 가져오는 중....") :
         stock = yf.Ticker(ticker_symbol)
         stock_info = stock.info
         
-        stock_name = stock_info.get('longName',stock_info.get('shortName',ticker_symbol))
         st.title(f"{stock_name} ({ticker_symbol}) 상세정보")
         
         df = stock.history(period = '3mo')
@@ -87,3 +99,45 @@ with st.spinner("주식 정보를 가져오는 중....") :
         st.error(f"정보를 가져오는 중 오류가 발생했습니다: {e}")
         # 에러가 나도 제목은 보여주기 위해 티커로 표시
         st.title(f"{ticker_symbol} 상세 정보")
+        
+st.divider()
+st.subheader(f"오늘의 {stock_name} 주요뉴스")
+
+col1, col2, col3, col4 = st.columns(4)
+columns = [col1, col2, col3, col4]
+for col, news in zip(columns, news_list):
+    with col:
+        title = news[0]
+        link = news[1]
+        reason = news[2]
+        analysis = news[3]
+        
+        random_id = random.randint(1, 1000)
+        img_url = f"https://picsum.photos/300/200?random={random_id}"
+        
+        st.markdown(
+            f"""
+            <a href="{link}" target="_blank">
+                <img src="{img_url}" style="width:100%; border-radius: 10px; margin-bottom: 10px;">
+            </a?
+            """,
+            unsafe_allow_html=True
+        )
+        
+        # 기존 코드 지우고 이걸로 붙여넣으세요!
+        st.markdown(
+            f"""
+            <a href="{link}" target="_blank" style="color: #007bff; text-decoration: underline; font-weight: bold;">
+                {title}
+            </a>
+            """,
+            unsafe_allow_html=True
+        )
+        with st.expander("🔍 AI 요약본 확인하기 (클릭)") :
+            st.markdown(f"**💡 선정 이유**")
+            st.info(reason) # 파란색 박스로 강조
+            
+            st.markdown(f"**📈 주식 시장 영향**")
+            st.success(analysis) # 초록색 박스로 강조
+            
+            st.markdown(f"[👉 기사 원문 읽기]({link})")
